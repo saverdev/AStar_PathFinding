@@ -1,3 +1,5 @@
+package stdlib_supp;
+
 public interface DrawListener {
     public void mousePressed (double x, double y);
     public void mouseDragged (double x, double y);

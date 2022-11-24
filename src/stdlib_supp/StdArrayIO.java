@@ -1,4 +1,4 @@
-
+package stdlib_supp;
 /*************************************************************************
  *  Compilation:  javac StdArrayIO.java
  *  Execution:    java StdArrayIO < input.txt

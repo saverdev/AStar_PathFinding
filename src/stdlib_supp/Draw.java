@@ -1,4 +1,4 @@
-/*************************************************************************
+package stdlib_supp; /*************************************************************************
  *  Compilation:  javac Draw.java
  *  Execution:    java Draw
  *
@@ -22,33 +22,20 @@
  *
  *************************************************************************/
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
-import java.awt.image.*;
-import java.io.*;
-import java.net.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DirectColorModel;
+import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
-import javax.imageio.ImageIO;
-import javax.swing.*;
-
-/**
- *  <i>Draw</i>. This class provides a basic capability for
- *  creating drawings with your programs. It uses a simple graphics model that
- *  allows you to create drawings consisting of points, lines, and curves
- *  in a window on your computer and to save the drawings to a file.
- *  This is the object-oriented version of standard draw; it supports
- *  multiple indepedent drawing windows.
- *  <p>
- *  For additional documentation, see <a href="http://introcs.cs.princeton.edu/31datatype">Section 3.1</a> of
- *  <i>Introduction to Programming in Java: An Interdisciplinary Approach</i> by Robert Sedgewick and Kevin Wayne.
- *
- *  @author Robert Sedgewick
- *  @author Kevin Wayne
- */
-
-import java.util.ArrayList;
 
 public final class Draw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 

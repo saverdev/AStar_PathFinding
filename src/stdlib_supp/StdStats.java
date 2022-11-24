@@ -1,4 +1,4 @@
-
+package stdlib_supp;
 /*************************************************************************
  *  Compilation:  javac StdStats.java
  *  Execution:    java StdStats < input.txt

@@ -1,3 +1,5 @@
+package stdlib_supp;
+
 /*************************************************************************
  *  Compilation:  javac UnicodeTest.java
  *  Execution:    java  UnicodeTest

@@ -1,10 +1,7 @@
+import stdlib_supp.*;
+
 import java.awt.*;
 import java.util.*;
-
-
-/**
- * Created by Suwadith 2015214 on 3/28/2017.
- */
 
 
 public class PathFindingOnSquaredGrid {
@@ -136,7 +133,7 @@ public class PathFindingOnSquaredGrid {
                 generateHValue(randomlyGenMatrix, Ai, Aj, Bi, Bj, n, 10, 10, true, 1);
 
                 //Checks whether the end point has been reach (Stored in the pathList)
-                if (cell[Ai][Aj].hValue!=-1&&pathList.contains(cell[Bi][Bj])) {
+                if (cell[Ai][Aj].hValue!=-1 && pathList.contains(cell[Bi][Bj])) {
                     StdDraw.setPenColor(Color.RED);
                 /*StdDraw.setPenRadius(0.006);*/
 
@@ -174,7 +171,7 @@ public class PathFindingOnSquaredGrid {
                 timerFlow = new Stopwatch();
                 generateHValue(randomlyGenMatrix, Ai, Aj, Bi, Bj, n, 10, 14, true, 2);
 
-                if (cell[Ai][Aj].hValue!=-1&&pathList.contains(cell[Bi][Bj])) {
+                if (cell[Ai][Aj].hValue!=-1 && pathList.contains(cell[Bi][Bj])) {
                     StdDraw.setPenColor(Color.BLACK);
                     StdDraw.setPenRadius(0.015);
 

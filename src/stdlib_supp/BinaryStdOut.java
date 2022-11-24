@@ -1,4 +1,4 @@
-/*************************************************************************
+package stdlib_supp; /*************************************************************************
  *  Compilation:  javac BinaryStdOut.java
  *  Execution:    java BinaryStdOut
  *

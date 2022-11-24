@@ -1,3 +1,4 @@
+package stdlib_supp;
 
 public final class Test {
 

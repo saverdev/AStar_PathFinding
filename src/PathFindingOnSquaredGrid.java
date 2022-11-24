@@ -1,6 +1,7 @@
 import stdlib_supp.*;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -93,14 +94,16 @@ public class PathFindingOnSquaredGrid {
     }
 
 
-    public static void menu() {
+    public static void menu() throws IOException {
+        ImageManipulation imageManipulation = new ImageManipulation("", 1);
+        /*
         Scanner in = new Scanner(System.in);
         System.out.println("Please choose N(Grid Size): ");
         int n = in.nextInt();
         System.out.println("Please choose Obstacle ratio: ");
         double p = in.nextDouble();
         int gCost = 0;
-        /*int fCost = 0;*/
+        int fCost = 0;
 
         //Generating a new Boolean Matrix according to the input values of n and p (Length, Percolation value)
         boolean[][] randomlyGenMatrix = random(n, p);
@@ -135,24 +138,24 @@ public class PathFindingOnSquaredGrid {
                 //Checks whether the end point has been reach (Stored in the pathList)
                 if (cell[Ai][Aj].hValue!=-1 && pathList.contains(cell[Bi][Bj])) {
                     StdDraw.setPenColor(Color.RED);
-                /*StdDraw.setPenRadius(0.006);*/
+                //StdDraw.setPenRadius(0.006);
 
                     //Draws the path
                     for (int i = 0; i < pathList.size(); i++) {
-                    /*System.out.println(pathList.get(i).x + " " + pathList.get(i).y);*/
+                      //System.out.println(pathList.get(i).x + " " + pathList.get(i).y);
                         StdDraw.filledSquare(pathList.get(i).y, n - pathList.get(i).x - 1, .5);
-                    /*StdDraw.line(pathList.get(i).y, n - 1 - pathList.get(i).x, pathList.get(i + 1).y, n - 1 - pathList.get(i + 1).x);*/
+                     //StdDraw.line(pathList.get(i).y, n - 1 - pathList.get(i).x, pathList.get(i + 1).y, n - 1 - pathList.get(i + 1).x);
                         //Adds the gValue of each and every Node object that's stored in the pathList
                         gCost += pathList.get(i).gValue;
-                        /*fCost += pathList.get(i).fValue;*/
+                        //fCost += pathList.get(i).fValue;
                     }
 
                     System.out.println("Chebyshev Path Found");
                     System.out.println("Total Cost: " + gCost/10.0);
-                    /*System.out.println("Total fCost: " + fCost);*/
+                    //System.out.println("Total fCost: " + fCost);
                     StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
                     gCost = 0;
-                    /*fCost = 0;*/
+                    //fCost = 0;
 
                 } else {
 
@@ -176,19 +179,19 @@ public class PathFindingOnSquaredGrid {
                     StdDraw.setPenRadius(0.015);
 
                     for (int i = 0; i < pathList.size() - 1; i++) {
-                   /* System.out.println(pathList.get(i).x + " " + pathList.get(i).y);*/
-                    /*StdDraw.circle(pathList.get(i).y, n - pathList.get(i).x - 1, .4);*/
+                  //System.out.println(pathList.get(i).x + " " + pathList.get(i).y);
+                  //StdDraw.circle(pathList.get(i).y, n - pathList.get(i).x - 1, .4);
                         StdDraw.line(pathList.get(i).y, n - 1 - pathList.get(i).x, pathList.get(i + 1).y, n - 1 - pathList.get(i + 1).x);
                         gCost += pathList.get(i).gValue;
-                        /*fCost += pathList.get(i).fValue;*/
+                        //fCost += pathList.get(i).fValue;
                     }
 
                     System.out.println("Euclidean Path Found");
                     System.out.println("Total Cost: " + gCost/10.0);
-                    /*System.out.println("Total fCost: " + fCost);*/
+                    //System.out.println("Total fCost: " + fCost);
                     StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
                     gCost = 0;
-                    /*fCost = 0;*/
+                    //fCost = 0;
 
                 } else {
 
@@ -210,19 +213,19 @@ public class PathFindingOnSquaredGrid {
                     StdDraw.setPenRadius(0.006);
 
                     for (int i = 0; i < pathList.size() - 1; i++) {
-                    /*System.out.println(pathList.get(i).x + " " + pathList.get(i).y);*/
-                    /*StdDraw.filledCircle(pathList.get(i).y, n - pathList.get(i).x - 1, .2);*/
+                    //System.out.println(pathList.get(i).x + " " + pathList.get(i).y);
+                    //StdDraw.filledCircle(pathList.get(i).y, n - pathList.get(i).x - 1, .2);
                         StdDraw.line(pathList.get(i).y, n - 1 - pathList.get(i).x, pathList.get(i + 1).y, n - 1 - pathList.get(i + 1).x);
                         gCost += pathList.get(i).gValue;
-                        /*fCost += pathList.get(i).fValue;*/
+                        //fCost += pathList.get(i).fValue;
                     }
 
                     System.out.println("Manhattan Path Found");
                     System.out.println("Total Cost: " + gCost/10.0);
-                    /*System.out.println("Total fCost: " + fCost);*/
+                    //System.out.println("Total fCost: " + fCost);
                     StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
                     gCost = 0;
-                    /*fCost = 0;*/
+                    //fCost = 0;
 
                 } else {
 
@@ -235,7 +238,7 @@ public class PathFindingOnSquaredGrid {
                 closedList.clear();
             }
         }
-
+        */
     }
 
     /**
@@ -451,9 +454,7 @@ public class PathFindingOnSquaredGrid {
     }
 
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
         menu();
-
     }
 }

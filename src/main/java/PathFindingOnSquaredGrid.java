@@ -1,8 +1,12 @@
 import stdlib_supp.*;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 
 public class PathFindingOnSquaredGrid {
@@ -164,8 +168,24 @@ public class PathFindingOnSquaredGrid {
             StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
         }
 
-        for(Node node : pathList){
-            System.out.println("(" + node.x + ", " + node.y + ")");
+        BufferedImage img = imageManipulation.getImg();
+        int p;
+        int alpha = 1;
+        int red = 255;
+        int green = 0;
+        int blue = 0;
+
+        //set the pixel value
+        p =  (alpha>>24) | (red>>16) | (green>>8) | blue;
+
+
+        if (pathList != null) {
+            File f = new File("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/path.jpg");
+            for (Node node : pathList) {
+                img.setRGB(node.y, node.x, p);
+                ImageIO.write(img, "jpg", f);
+                System.out.println("(" + node.x + ", " + node.y + ")");
+            }
         }
     }
 

@@ -14,42 +14,43 @@ public class PathFindingOnSquaredGrid {
 
     // draw the N-by-N boolean matrix to standard draw
     public static void show(boolean[][] a, boolean which) {
-        int N = a.length;
-        StdDraw.setXscale(-1, N);
-        StdDraw.setYscale(-1, N);
+        int x = a[0].length;
+        int y = a.length;
+        StdDraw.setXscale(-1, x);
+        StdDraw.setYscale(-1, y);
         StdDraw.setPenColor(StdDraw.BLACK);
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++)
+        for (int i = 0; i < y; i++)
+            for (int j = 0; j < x; j++)
                 if (a[i][j] == which)
-                    StdDraw.square(j, N - i - 1, .5);
-                else StdDraw.filledSquare(j, N - i - 1, .5);
+                    StdDraw.square(j, y - i - 1, 1);
+                else StdDraw.filledSquare(j, y - i - 1, 1);
     }
 
     // draw the N-by-N boolean matrix to standard draw, including the points A (x1, y1) and B (x2,y2) to be marked by a circle
+
     public static void show(boolean[][] a, boolean which, int x1, int y1, int x2, int y2) {
-        int N = a.length;
-        StdDraw.setXscale(-1, N);
-        StdDraw.setYscale(-1, N);
+        int x = a[0].length;
+        int y = a.length;
+        StdDraw.setXscale(1, x);
+        StdDraw.setYscale(1, y);
         StdDraw.setPenColor(StdDraw.BLACK);
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++)
+        for (int i = 0; i < y; i++)
+            for (int j = 0; j < x; j++)
                 if (a[i][j] == which)
-                    if ((i == x1 && j == y1) || (i == x2 && j == y2)) {
-                        StdDraw.circle(j, N - i - 1, .5);
-                    } else StdDraw.square(j, N - i - 1, .5);
-                else StdDraw.filledSquare(j, N - i - 1, .5);
+                    if (i == x1 && j == y1){
+                        StdDraw.setPenColor(StdDraw.GREEN);
+                        StdDraw.circle(j, y - i - 1, .5);
+                        StdDraw.setPenColor(StdDraw.BLACK);
+                    }else if(i == x2 && j == y2){
+                        StdDraw.setPenColor(StdDraw.RED);
+                        StdDraw.circle(j, y - i - 1, .5);
+                        StdDraw.setPenColor(StdDraw.BLACK);
+                    }else StdDraw.square(j, y - i - 1, .5);
+                else StdDraw.filledSquare(j, y - i - 1, .5);
     }
 
     // return a random N-by-N boolean matrix, where each entry is
     // true with probability p
-    public static boolean[][] random(int N, double p) {
-        boolean[][] a = new boolean[N][N];
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++)
-                a[i][j] = StdRandom.bernoulli(p);
-        return a;
-    }
-
     /**
      * @param matrix         The boolean matrix that the framework generates
      * @param Ai             Starting point's x value
@@ -95,84 +96,52 @@ public class PathFindingOnSquaredGrid {
 
 
     public static void menu() throws IOException {
-        ImageManipulation imageManipulation = new ImageManipulation("", 1);
-        /*
-        Scanner in = new Scanner(System.in);
-        System.out.println("Please choose N(Grid Size): ");
-        int n = in.nextInt();
-        System.out.println("Please choose Obstacle ratio: ");
-        double p = in.nextDouble();
+        ImageManipulation imageManipulation = new ImageManipulation("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/mappa3.jpg", 1);
+
+        boolean[][] grid = imageManipulation.getGrid();
+
         int gCost = 0;
         int fCost = 0;
 
-        //Generating a new Boolean Matrix according to the input values of n and p (Length, Percolation value)
-        boolean[][] randomlyGenMatrix = random(n, p);
-
         //StdArrayIO.print(randomlyGenMatrix);
-        show(randomlyGenMatrix, true);
+        //show(grid, false);
+
+
 
         //Creation of a Node type 2D array
-        cell = new Node[randomlyGenMatrix.length][randomlyGenMatrix.length];
+        cell = new Node[grid.length][grid[0].length];
+
+        Scanner in = new Scanner(System.in);
+
+
+        System.out.println("Enter x1: ");
+        int startX = in.nextInt(); //Aj
 
         System.out.println("Enter y1: ");
-        int Ai = in.nextInt();
-        System.out.println("Enter x1: ");
-        int Aj = in.nextInt();
-        System.out.println("Enter y2: ");
-        int Bi = in.nextInt();
-        System.out.println("Enter x2: ");
-        int Bj = in.nextInt();
+        int startY = in.nextInt(); //Ai
 
-        show(randomlyGenMatrix, true, Ai, Aj, Bi, Bj);
+        System.out.println("Enter x2: ");
+        int endX = in.nextInt(); //Bj
+
+        System.out.println("Enter y2: ");
+        int endY = in.nextInt(); //Bi
+
+
+
+
+        show(grid, false, startY, startX, endY, endX);
+
 
         Stopwatch timerFlow = null;
+
+
 
         //Loop to find all 3 pathways and their relative Final Cost values
         for (int j = 0; j < 3; j++) {
 
-            if (j == 0) {
-                timerFlow = new Stopwatch();
-                //Method to generate Chebyshev path. Both Horizontal and Diagonal pathways are possible.
-                generateHValue(randomlyGenMatrix, Ai, Aj, Bi, Bj, n, 10, 10, true, 1);
-
-                //Checks whether the end point has been reach (Stored in the pathList)
-                if (cell[Ai][Aj].hValue!=-1 && pathList.contains(cell[Bi][Bj])) {
-                    StdDraw.setPenColor(Color.RED);
-                //StdDraw.setPenRadius(0.006);
-
-                    //Draws the path
-                    for (int i = 0; i < pathList.size(); i++) {
-                      //System.out.println(pathList.get(i).x + " " + pathList.get(i).y);
-                        StdDraw.filledSquare(pathList.get(i).y, n - pathList.get(i).x - 1, .5);
-                     //StdDraw.line(pathList.get(i).y, n - 1 - pathList.get(i).x, pathList.get(i + 1).y, n - 1 - pathList.get(i + 1).x);
-                        //Adds the gValue of each and every Node object that's stored in the pathList
-                        gCost += pathList.get(i).gValue;
-                        //fCost += pathList.get(i).fValue;
-                    }
-
-                    System.out.println("Chebyshev Path Found");
-                    System.out.println("Total Cost: " + gCost/10.0);
-                    //System.out.println("Total fCost: " + fCost);
-                    StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
-                    gCost = 0;
-                    //fCost = 0;
-
-                } else {
-
-                    System.out.println("Chebyshev Path Not found");
-                    StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
-
-                }
-
-                //Clears Both the pathList and the closedList
-                pathList.clear();
-                closedList.clear();
-            }
-
-
             if (j == 1) {
                 timerFlow = new Stopwatch();
-                generateHValue(randomlyGenMatrix, Ai, Aj, Bi, Bj, n, 10, 14, true, 2);
+                generateHValue(grid, startY, startX, endY, endX, n, 10, 14, true, 2);
 
                 if (cell[Ai][Aj].hValue!=-1 && pathList.contains(cell[Bi][Bj])) {
                     StdDraw.setPenColor(Color.BLACK);

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class ImageManipulation {
         private BufferedImage img;
-        private int[][] grid;
+        private boolean[][] grid;
         private int height;
         private int width;
 
@@ -19,7 +19,7 @@ public class ImageManipulation {
                 this.height = img.getHeight() + 1;
 
                 this.img = resize(this.img, scale);
-                this.grid = new int[width][height];
+                this.grid = new boolean[height][width];
 
 
                 this.buildBarriers();
@@ -35,9 +35,9 @@ public class ImageManipulation {
                                 int blue = p & 0x000000ff;
 
                                 if (red != 255 && green != 255 && blue != 255) {
-                                        this.grid[x][y] = 100;
+                                        this.grid[y][x] = true;
                                 }else{
-                                        this.grid[x][y] = 0;
+                                        this.grid[y][x] = false;
                                 }
 
                         }
@@ -93,11 +93,11 @@ public class ImageManipulation {
                 this.img = img;
         }
 
-        public int[][] getGrid() {
+        public boolean[][] getGrid() {
                 return grid;
         }
 
-        public void setGrid(int[][] grid) {
+        public void setGrid(boolean[][] grid) {
                 this.grid = grid;
         }
 

@@ -1,23 +1,26 @@
-import stdlib_supp.*;
+import stdlib_supp.StdDraw;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
+public class Dijkstra {
+    private boolean[][] grid;
+    private Node[][] cell;
+    private ArrayList<Node> path;
+    private ArrayList<Node> closedList;
 
-public class PathFindingOnSquaredGrid {
+    public Dijkstra(boolean[][] grid, Node start, Node end){
+        path = new ArrayList<>();
+        closedList = new ArrayList<>();
+        this.cell = new Node[grid.length][grid[0].length];
+        this.grid = grid;
+        this.show(this.grid, false, start.y, start.x, end.y, end.x);
+        EuclidianMethod(this.grid, start.y, start.x, end.y, end.x);
+    }
 
-    static Node[][] cell;
-    static ArrayList<Node> pathList = new ArrayList<>();
-    static ArrayList<Node> closedList = new ArrayList<>();
-    static boolean additionalPath = false;
-
-    // draw the N-by-N boolean matrix to standard draw
-    public static void show(boolean[][] a, boolean which) {
+    private void show(boolean[][] a, boolean which) {
         int x = a[0].length;
         int y = a.length;
         StdDraw.setXscale(-1, x);
@@ -32,7 +35,7 @@ public class PathFindingOnSquaredGrid {
 
     // draw the N-by-N boolean matrix to standard draw, including the points A (x1, y1) and B (x2,y2) to be marked by a circle
 
-    public static void show(boolean[][] a, boolean which, int x1, int y1, int x2, int y2) {
+    private void show(boolean[][] a, boolean which, int x1, int y1, int x2, int y2) {
         int x = a[0].length;
         int y = a.length;
         StdDraw.setXscale(1, x);
@@ -53,20 +56,28 @@ public class PathFindingOnSquaredGrid {
                 else StdDraw.filledSquare(j, y - i - 1, .5);
     }
 
-    // return a random N-by-N boolean matrix, where each entry is
-    // true with probability p
-    /**
-     * @param matrix         The boolean matrix that the framework generates
-     * @param Ai             Starting point's x value
-     * @param Aj             Starting point's y value
-     * @param Bi             Ending point's x value
-     * @param Bj             Ending point's y value
-     * @param v              Cost between 2 cells located horizontally or vertically next to each other
-     * @param d              Cost between 2 cells located Diagonally next to each other
-     * @param additionalPath Boolean to decide whether to calculate the cost of through the diagonal path
-     * @param h              int value which decides the correct method to choose to calculate the Heuristic value
-     */
-    public static void generateHValue(boolean matrix[][], int Ai, int Aj, int Bi, int Bj, int v, int d, boolean additionalPath, int h) {
+    private void EuclidianMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
+        int gCost = 0;
+        this.generateHValue(grid, startY, startX, endY, endX, 10, 10, false, 3);
+
+        if (cell[startY][startX].hValue!=-1 && path.contains(cell[endY][endX])) {
+            StdDraw.setPenColor(Color.ORANGE);
+            StdDraw.setPenRadius(0.01);
+
+            for (int i = 0; i < path.size() - 1; i++) {
+                StdDraw.line(path.get(i).y, grid.length - 1 - path.get(i).x, path.get(i + 1).y, grid.length - 1 - path.get(i + 1).x);
+                gCost += path.get(i).gValue;
+            }
+
+            System.out.println("Euclidean Path Found");
+            System.out.println("Total Cost: " + gCost/10.0);
+            gCost = 0;
+
+        } else {
+            System.out.println("Euclidean Path Not found");
+        }
+    }
+    private void generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath, int h) {
 
         for (int y = 0; y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {
@@ -76,17 +87,17 @@ public class PathFindingOnSquaredGrid {
                 if (!matrix[y][x]) {
                     if (h == 1) {
                         //Assigning the Chebyshev Heuristic value
-                        if (Math.abs(y - Bi) > Math.abs(x - Bj)) {
-                            cell[y][x].hValue = Math.abs(y - Bi);
+                        if (Math.abs(y - endY) > Math.abs(x - endX)) {
+                            cell[y][x].hValue = Math.abs(y - endY);
                         } else {
-                            cell[y][x].hValue = Math.abs(x - Bj);
+                            cell[y][x].hValue = Math.abs(x - endX);
                         }
                     } else if (h == 2) {
                         //Assigning the Euclidean Heuristic value
-                        cell[y][x].hValue = Math.sqrt(Math.pow(y - Bi, 2) + Math.pow(x - Bj, 2));
+                        cell[y][x].hValue = Math.sqrt(Math.pow(y - endY, 2) + Math.pow(x - endX, 2));
                     } else if (h == 3) {
                         //Assigning the Manhattan Heuristic value by calculating the absolute length (x+y) from the ending point to the starting point
-                        cell[y][x].hValue = Math.abs(y - Bi) + Math.abs(x - Bj);
+                        cell[y][x].hValue = Math.abs(y - endY) + Math.abs(x - endX);
                     }
                 } else {
                     //If the boolean value is false, then assigning -1 instead of the absolute length
@@ -94,143 +105,28 @@ public class PathFindingOnSquaredGrid {
                 }
             }
         }
-        generatePath(cell, Ai, Aj, Bi, Bj, v, d, additionalPath);
+        this.generatePath(cell, startY, startX, endY, endX, v, d, additionalPath);
     }
 
-
-    public static void menu() throws IOException {
-        ImageManipulation imageManipulation = new ImageManipulation("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/mappa3.jpg", 1);
-
-        boolean[][] grid = imageManipulation.getGrid();
-
-        int gCost = 0;
-        //int fCost = 0;
-
-        //StdArrayIO.print(randomlyGenMatrix);
-        //show(grid, false);
-
-        //n = grid size
-
-
-        //Creation of a Node type 2D array
-        cell = new Node[grid.length][grid[0].length];
-
-        /*Scanner in = new Scanner(System.in);
-
-
-        System.out.println("Enter x1: ");
-        int startX = in.nextInt(); //Aj
-
-        System.out.println("Enter y1: ");
-        int startY = in.nextInt(); //Ai
-
-        System.out.println("Enter x2: ");
-        int endX = in.nextInt(); //Bj
-
-        System.out.println("Enter y2: ");
-        int endY = in.nextInt(); //Bi
-
-        */
-
-        int startX = 47;
-        int startY = 38;
-        int endX = 207;
-        int endY = 142;
-
-
-        show(grid, false, startY, startX, endY, endX);
-
-
-        Stopwatch timerFlow = new Stopwatch();
-        generateHValue(grid, startY, startX, endY, endX, 10, 10, false, 3);
-
-        if (cell[startY][startX].hValue != -1 && pathList.contains(cell[endY][endX])) {
-            StdDraw.setPenColor(Color.orange);
-            StdDraw.setPenRadius(0.006);
-
-            for (int i = 0; i < pathList.size() - 1; i++) {
-            //System.out.println(pathList.get(i).x + " " + pathList.get(i).y);
-            //StdDraw.filledCircle(pathList.get(i).y, n - pathList.get(i).x - 1, .2);
-                StdDraw.line(pathList.get(i).y, grid.length - 1 - pathList.get(i).x, pathList.get(i + 1).y, grid.length - 1 - pathList.get(i + 1).x);
-                gCost += pathList.get(i).gValue;
-                //fCost += pathList.get(i).fValue;
-            }
-
-            System.out.println("Manhattan Path Found");
-            System.out.println("Total Cost: " + gCost/10);
-            //System.out.println("Total fCost: " + fCost);
-            StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
-            gCost = 0;
-            //fCost = 0;
-
-        } else {
-            System.out.println("Manhattan Path Not found");
-            StdOut.println("Elapsed time = " + timerFlow.elapsedTime());
-        }
-
-        BufferedImage img = imageManipulation.getImg();
-        int p;
-        int alpha = 1;
-        int red = 255;
-        int green = 0;
-        int blue = 0;
-
-        //set the pixel value
-        p =  (alpha>>24) | (red>>16) | (green>>8) | blue;
-
-
-        if (pathList != null) {
-            File f = new File("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/path.jpg");
-            for (Node node : pathList) {
-                img.setRGB(node.y, node.x, p);
-                ImageIO.write(img, "jpg", f);
-                System.out.println("(" + node.x + ", " + node.y + ")");
-            }
-        }
-    }
-
-    /**
-     * @param hValue         Node type 2D Array (Matrix)
-     * @param Ai             Starting point's y value
-     * @param Aj             Starting point's x value
-     * @param Bi             Ending point's y value
-     * @param Bj             Ending point's x value
-     * @param v              Cost between 2 cells located horizontally or vertically next to each other
-     * @param d              Cost between 2 cells located Diagonally next to each other
-     * @param additionalPath Boolean to decide whether to calculate the cost of through the diagonal path
-     */
-    public static void generatePath(Node hValue[][], int Ai, int Aj, int Bi, int Bj, int v, int d, boolean additionalPath) {
-
-        //Creation of a PriorityQueue and the declaration of the Comparator
+    private void generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath){
         PriorityQueue<Node> openList = new PriorityQueue<>(11, new Comparator() {
             @Override
-            //Compares 2 Node objects stored in the PriorityQueue and Reorders the Queue according to the object which has the lowest fValue
             public int compare(Object cell1, Object cell2) {
                 return Double.compare(((Node) cell1).fValue, ((Node) cell2).fValue);
             }
         });
 
-        //Adds the Starting cell inside the openList
-        openList.add(cell[Ai][Aj]);
+        openList.add(this.cell[startY][startX]);
 
-        //Executes the rest if there are objects left inside the PriorityQueue
-        while (true) {
-
-            //Gets and removes the objects that's stored on the top of the openList and saves it inside node
+        while(true){
             Node node = openList.poll();
-
-            //Checks if whether node is empty and f it is then breaks the while loop
             if (node == null) {
                 break;
             }
-
-            //Checks if whether the node returned is having the same node object values of the ending point
-            //If it des then stores that inside the closedList and breaks the while loop
-            if (node == cell[Bi][Bj]) {
+            if (node == cell[endY][endX]) {
                 closedList.add(node);
                 break;
             }
-
             closedList.add(node);
 
             //Left Cell
@@ -373,34 +269,15 @@ public class PathFindingOnSquaredGrid {
             }
         }
 
-        /*for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
-                System.out.print(cell[i][j].fValue + "    ");
-            }
-            System.out.println();
-        }*/
-
-        //Assigns the last Object in the closedList to the endNode variable
         Node endNode = closedList.get(closedList.size() - 1);
 
-        //Checks if whether the endNode variable currently has a parent Node. if it doesn't then stops moving forward.
-        //Stores each parent Node to the PathList so it is easier to trace back the final path
         while (endNode.parent != null) {
             Node currentNode = endNode;
-            pathList.add(currentNode);
+            this.path.add(currentNode);
             endNode = endNode.parent;
         }
 
-        pathList.add(cell[Ai][Aj]);
-        //Clears the openList
-        openList.clear();
-
-        System.out.println();
-
+        this.path.add(this.cell[startY][startX]);
     }
 
-
-    public static void main(String[] args) throws IOException {
-        menu();
-    }
 }

@@ -58,7 +58,7 @@ public class Dijkstra {
 
     private void EuclidianMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
         int gCost = 0;
-        this.generateHValue(grid, startY, startX, endY, endX, 10, 10, false, 3);
+        this.generateHValue(grid, startY, startX, endY, endX, 10, 10, true, 3);
 
         if (cell[startY][startX].hValue!=-1 && path.contains(cell[endY][endX])) {
             StdDraw.setPenColor(Color.ORANGE);
@@ -77,7 +77,7 @@ public class Dijkstra {
             System.out.println("Euclidean Path Not found");
         }
     }
-    private void generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath, int h) {
+    private void generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean enableDiagonal, int h) {
 
         for (int y = 0; y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {
@@ -105,10 +105,10 @@ public class Dijkstra {
                 }
             }
         }
-        this.generatePath(cell, startY, startX, endY, endX, v, d, additionalPath);
+        this.generatePath(cell, startY, startX, endY, endX, v, d, enableDiagonal);
     }
 
-    private void generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath){
+    private void generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean enableDiagonal){
         PriorityQueue<Node> openList = new PriorityQueue<>(11, new Comparator() {
             @Override
             public int compare(Object cell1, Object cell2) {
@@ -197,8 +197,6 @@ public class Dijkstra {
             } catch (IndexOutOfBoundsException e) {
             }
 
-            if (additionalPath) {
-
                 //TopLeft Cell
                 try {
                     if (cell[node.x - 1][node.y - 1].hValue != -1
@@ -266,7 +264,6 @@ public class Dijkstra {
                     }
                 } catch (IndexOutOfBoundsException e) {
                 }
-            }
         }
 
         Node endNode = closedList.get(closedList.size() - 1);
@@ -280,4 +277,19 @@ public class Dijkstra {
         this.path.add(this.cell[startY][startX]);
     }
 
+    public boolean[][] getGrid() {
+        return grid;
+    }
+
+    public Node[][] getCell() {
+        return cell;
+    }
+
+    public ArrayList<Node> getPath() {
+        return path;
+    }
+
+    public ArrayList<Node> getClosedList() {
+        return closedList;
+    }
 }

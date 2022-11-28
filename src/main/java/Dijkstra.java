@@ -1,4 +1,6 @@
 import stdlib_supp.StdDraw;
+import stdlib_supp.StdOut;
+import stdlib_supp.Stopwatch;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -17,7 +19,7 @@ public class Dijkstra {
         this.cell = new Node[grid.length][grid[0].length];
         this.grid = grid;
         this.show(this.grid, false, start.y, start.x, end.y, end.x);
-        EuclidianMethod(this.grid, start.y, start.x, end.y, end.x);
+        ManhattanMethod(this.grid, start.y, start.x, end.y, end.x);
     }
 
     private void show(boolean[][] a, boolean which) {
@@ -56,28 +58,34 @@ public class Dijkstra {
                 else StdDraw.filledSquare(j, y - i - 1, .5);
     }
 
-    private void EuclidianMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
+    private void ManhattanMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
         int gCost = 0;
-        this.generateHValue(grid, startY, startX, endY, endX, 10, 10, true, 3);
+        this.generateHValue(grid, startY, startX, endY, endX, 10, 10, 3);
 
         if (cell[startY][startX].hValue!=-1 && path.contains(cell[endY][endX])) {
-            StdDraw.setPenColor(Color.ORANGE);
-            StdDraw.setPenRadius(0.01);
+            StdDraw.setPenColor(Color.orange);
+            StdDraw.setPenRadius(0.006);
 
             for (int i = 0; i < path.size() - 1; i++) {
+                /*System.out.println(pathList.get(i).x + " " + pathList.get(i).y);*/
+                /*StdDraw.filledCircle(pathList.get(i).y, n - pathList.get(i).x - 1, .2);*/
                 StdDraw.line(path.get(i).y, grid.length - 1 - path.get(i).x, path.get(i + 1).y, grid.length - 1 - path.get(i + 1).x);
                 gCost += path.get(i).gValue;
+                /*fCost += pathList.get(i).fValue;*/
             }
 
-            System.out.println("Euclidean Path Found");
+            System.out.println("Manhattan Path Found");
             System.out.println("Total Cost: " + gCost/10.0);
+            /*System.out.println("Total fCost: " + fCost);*/
             gCost = 0;
+            /*fCost = 0;*/
 
         } else {
-            System.out.println("Euclidean Path Not found");
+            System.out.println("Manhattan Path Not found");
         }
     }
-    private void generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean enableDiagonal, int h) {
+
+    private void generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, int h) {
 
         for (int y = 0; y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {
@@ -105,10 +113,10 @@ public class Dijkstra {
                 }
             }
         }
-        this.generatePath(cell, startY, startX, endY, endX, v, d, enableDiagonal);
+        this.generatePath(cell, startY, startX, endY, endX, v, d);
     }
 
-    private void generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean enableDiagonal){
+    private void generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d){
         PriorityQueue<Node> openList = new PriorityQueue<>(11, new Comparator() {
             @Override
             public int compare(Object cell1, Object cell2) {

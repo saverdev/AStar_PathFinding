@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +7,7 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String args[]) throws IOException {
-        ImageManipulation imageManipulation = new ImageManipulation("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/mappa3.jpg", 1);
+        ImageManipulation imageManipulation = new ImageManipulation("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/mappa4.jpg", 1);
 
         boolean[][] grid = imageManipulation.getGrid();
 
@@ -17,12 +18,12 @@ public class Main {
 
         ArrayList<Node> interestPoint = new ArrayList<>();
 
-        interestPoint.add(new Node(48, 34));
-        interestPoint.add(new Node(50, 143));
-        interestPoint.add(new Node(60, 68));
-        interestPoint.add(new Node(87, 142));
-        interestPoint.add(new Node(135, 52));
-        interestPoint.add(new Node(96, 75));
+        interestPoint.add(new Node(100, 57));
+        interestPoint.add(new Node(187, 151));
+        interestPoint.add(new Node(289, 151));
+        interestPoint.add(new Node(187, 237));
+        interestPoint.add(new Node(382, 107));
+        interestPoint.add(new Node(352, 243));
 
         Dijkstra algorithm = new Dijkstra(grid, interestPoint);
 
@@ -30,24 +31,9 @@ public class Main {
 
         BufferedImage img = imageManipulation.getImg();
 
-        int p;
-        int alpha = 1;
-        int red = 255;
-        int green = 0;
-        int blue = 0;
+        Color colorToUse = new Color(0, 0, 255);
 
-        //set the pixel value
-        p =  (alpha>>24) | (red>>16) | (green>>8) | blue;
-
-        if (path != null) {
-            File f = new File("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/path.jpg");
-            for(ArrayList<Node> slicedPath : path){
-                for(Node point: slicedPath){
-                    img.setRGB(point.y, point.x, p);
-                    ImageIO.write(img, "jpg", f);
-                }
-            }
-        }
+        imageManipulation.drawPath(path, "/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/path.jpg", colorToUse, 8888);
 
 
     }

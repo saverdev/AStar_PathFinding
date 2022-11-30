@@ -27,7 +27,7 @@ public class Dijkstra {
 
     private ArrayList<Node> EuclidianMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
         int gCost = 0;
-        ArrayList<Node> slicedPath = this.generateHValue(grid, startY, startX, endY, endX, 10, 10, false, 3);
+        ArrayList<Node> slicedPath = this.generateHValue(grid, startY, startX, endY, endX, 1, 5, true, 2);
 
         if (cell[startY][startX].hValue!=-1 && path.contains(cell[endY][endX])) {
             for (int i = 0; i < path.size() - 1; i++) {
@@ -42,7 +42,14 @@ public class Dijkstra {
         }
         return slicedPath;
     }
-    private ArrayList<Node> generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath, int h) {
+
+    /*
+    vnhCost Cost between 2 cells located horizontally or vertically next to each other
+    diagonalCost Cost between 2 cells located Diagonally next to each other
+    diagonalPath diagonal path qualified
+    h different heuristic method
+    */
+    private ArrayList<Node> generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int vnhCost, int diagonalCost, boolean diagonalPath, int h) {
 
         for (int y = 0; y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {
@@ -70,10 +77,10 @@ public class Dijkstra {
                 }
             }
         }
-        return this.generatePath(cell, startY, startX, endY, endX, v, d, additionalPath);
+        return this.generatePath(cell, startY, startX, endY, endX, vnhCost, diagonalCost, diagonalPath);
     }
 
-    private ArrayList<Node> generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath){
+    private ArrayList<Node> generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int vnhCost, int diagonalCost, boolean diagonalPath){
         PriorityQueue<Node> openList = new PriorityQueue<>(11, new Comparator() {
             @Override
             public int compare(Object cell1, Object cell2) {
@@ -99,8 +106,8 @@ public class Dijkstra {
                 if (cell[node.x][node.y - 1].hValue != -1
                         && !openList.contains(cell[node.x][node.y - 1])
                         && !closedList.contains(cell[node.x][node.y - 1])) {
-                    double tCost = node.fValue + v;
-                    cell[node.x][node.y - 1].gValue = v;
+                    double tCost = node.fValue + vnhCost;
+                    cell[node.x][node.y - 1].gValue = vnhCost;
                     double cost = cell[node.x][node.y - 1].hValue + tCost;
                     if (cell[node.x][node.y - 1].fValue > cost || !openList.contains(cell[node.x][node.y - 1]))
                         cell[node.x][node.y - 1].fValue = cost;
@@ -116,8 +123,8 @@ public class Dijkstra {
                 if (cell[node.x][node.y + 1].hValue != -1
                         && !openList.contains(cell[node.x][node.y + 1])
                         && !closedList.contains(cell[node.x][node.y + 1])) {
-                    double tCost = node.fValue + v;
-                    cell[node.x][node.y + 1].gValue = v;
+                    double tCost = node.fValue + vnhCost;
+                    cell[node.x][node.y + 1].gValue = vnhCost;
                     double cost = cell[node.x][node.y + 1].hValue + tCost;
                     if (cell[node.x][node.y + 1].fValue > cost || !openList.contains(cell[node.x][node.y + 1]))
                         cell[node.x][node.y + 1].fValue = cost;
@@ -133,8 +140,8 @@ public class Dijkstra {
                 if (cell[node.x + 1][node.y].hValue != -1
                         && !openList.contains(cell[node.x + 1][node.y])
                         && !closedList.contains(cell[node.x + 1][node.y])) {
-                    double tCost = node.fValue + v;
-                    cell[node.x + 1][node.y].gValue = v;
+                    double tCost = node.fValue + vnhCost;
+                    cell[node.x + 1][node.y].gValue = vnhCost;
                     double cost = cell[node.x + 1][node.y].hValue + tCost;
                     if (cell[node.x + 1][node.y].fValue > cost || !openList.contains(cell[node.x + 1][node.y]))
                         cell[node.x + 1][node.y].fValue = cost;
@@ -150,8 +157,8 @@ public class Dijkstra {
                 if (cell[node.x - 1][node.y].hValue != -1
                         && !openList.contains(cell[node.x - 1][node.y])
                         && !closedList.contains(cell[node.x - 1][node.y])) {
-                    double tCost = node.fValue + v;
-                    cell[node.x - 1][node.y].gValue = v;
+                    double tCost = node.fValue + vnhCost;
+                    cell[node.x - 1][node.y].gValue = vnhCost;
                     double cost = cell[node.x - 1][node.y].hValue + tCost;
                     if (cell[node.x - 1][node.y].fValue > cost || !openList.contains(cell[node.x - 1][node.y]))
                         cell[node.x - 1][node.y].fValue = cost;
@@ -162,15 +169,15 @@ public class Dijkstra {
             } catch (IndexOutOfBoundsException e) {
             }
 
-            if (additionalPath) {
+            if (diagonalPath) {
 
                 //TopLeft Cell
                 try {
                     if (cell[node.x - 1][node.y - 1].hValue != -1
                             && !openList.contains(cell[node.x - 1][node.y - 1])
                             && !closedList.contains(cell[node.x - 1][node.y - 1])) {
-                        double tCost = node.fValue + d;
-                        cell[node.x - 1][node.y - 1].gValue = d;
+                        double tCost = node.fValue + diagonalCost;
+                        cell[node.x - 1][node.y - 1].gValue = diagonalCost;
                         double cost = cell[node.x - 1][node.y - 1].hValue + tCost;
                         if (cell[node.x - 1][node.y - 1].fValue > cost || !openList.contains(cell[node.x - 1][node.y - 1]))
                             cell[node.x - 1][node.y - 1].fValue = cost;
@@ -186,8 +193,8 @@ public class Dijkstra {
                     if (cell[node.x - 1][node.y + 1].hValue != -1
                             && !openList.contains(cell[node.x - 1][node.y + 1])
                             && !closedList.contains(cell[node.x - 1][node.y + 1])) {
-                        double tCost = node.fValue + d;
-                        cell[node.x - 1][node.y + 1].gValue = d;
+                        double tCost = node.fValue + diagonalCost;
+                        cell[node.x - 1][node.y + 1].gValue = diagonalCost;
                         double cost = cell[node.x - 1][node.y + 1].hValue + tCost;
                         if (cell[node.x - 1][node.y + 1].fValue > cost || !openList.contains(cell[node.x - 1][node.y + 1]))
                             cell[node.x - 1][node.y + 1].fValue = cost;
@@ -203,8 +210,8 @@ public class Dijkstra {
                     if (cell[node.x + 1][node.y - 1].hValue != -1
                             && !openList.contains(cell[node.x + 1][node.y - 1])
                             && !closedList.contains(cell[node.x + 1][node.y - 1])) {
-                        double tCost = node.fValue + d;
-                        cell[node.x + 1][node.y - 1].gValue = d;
+                        double tCost = node.fValue + diagonalCost;
+                        cell[node.x + 1][node.y - 1].gValue = diagonalCost;
                         double cost = cell[node.x + 1][node.y - 1].hValue + tCost;
                         if (cell[node.x + 1][node.y - 1].fValue > cost || !openList.contains(cell[node.x + 1][node.y - 1]))
                             cell[node.x + 1][node.y - 1].fValue = cost;
@@ -220,8 +227,8 @@ public class Dijkstra {
                     if (cell[node.x + 1][node.y + 1].hValue != -1
                             && !openList.contains(cell[node.x + 1][node.y + 1])
                             && !closedList.contains(cell[node.x + 1][node.y + 1])) {
-                        double tCost = node.fValue + d;
-                        cell[node.x + 1][node.y + 1].gValue = d;
+                        double tCost = node.fValue + diagonalCost;
+                        cell[node.x + 1][node.y + 1].gValue = diagonalCost;
                         double cost = cell[node.x + 1][node.y + 1].hValue + tCost;
                         if (cell[node.x + 1][node.y + 1].fValue > cost || !openList.contains(cell[node.x + 1][node.y + 1]))
                             cell[node.x + 1][node.y + 1].fValue = cost;

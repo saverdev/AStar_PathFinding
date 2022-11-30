@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ImageManipulation {
         private BufferedImage img;
@@ -83,9 +84,70 @@ public class ImageManipulation {
                 }
         }
 
-        public void drawImage(int p, int alpha, int red, int green, int blue){
+        public void drawPath(ArrayList<ArrayList<Node>> path, String writtenImagePath, Color color, int dimPen) throws IOException {
+                //Recommanded dimPen value: 1
+
+                if(color == null){
+                        color = new Color(0,0,0);
+                        System.out.println("[ImageManipulation] drawPath WARNING: inserted color value is null\nDefault Settings: new Color(0, 0, 0) (Black)\n");
+                }
+
+                if(dimPen < 0 || dimPen > 4) {
+                        dimPen = 1;
+                        System.out.println("[ImageManipulation] drawPath WARNING: inserted dimPen value not accepted\nDefault Settings: dimPen = 1\n");
+                }
+                int rgb = color.getRGB();
+                if (this.img != null) {
+                        if (path != null) {
+                                File f = new File(writtenImagePath);
+                                for (ArrayList<Node> slicedPath : path) {
+                                        for (Node point : slicedPath) {
+                                                if(dimPen == 1){
+                                                        img.setRGB(point.y, point.x, rgb);
+                                                }
+                                                if(dimPen == 2){
+                                                        img.setRGB(point.y, point.x, rgb);
+
+                                                        img.setRGB(point.y, point.x - 1, rgb);
+                                                        img.setRGB(point.y, point.x + 1, rgb);
+                                                        img.setRGB(point.y - 1, point.x, rgb);
+                                                        img.setRGB(point.y + 1, point.x, rgb);
+                                                }
+                                                if(dimPen == 3){
+                                                        img.setRGB(point.y, point.x, rgb);
+
+                                                        img.setRGB(point.y, point.x - 1, rgb);
+                                                        img.setRGB(point.y, point.x + 1, rgb);
+                                                        img.setRGB(point.y - 1, point.x, rgb);
+                                                        img.setRGB(point.y + 1, point.x, rgb);
+
+                                                        img.setRGB(point.y - 1, point.x + 1, rgb);
+                                                        img.setRGB(point.y + 1, point.x + 1, rgb);
+                                                        img.setRGB(point.y - 1, point.x - 1, rgb);
+                                                        img.setRGB(point.y + 1, point.x - 1, rgb);
+                                                }
+                                                ImageIO.write(img, "jpg", f);
+                                        }
+
+                                }
+                        } else throw new Error("[ImageManipulation] drawPath: Path is null");
+                } else throw new Error("[ImageManipulation] drawPath: BufferedImage is null");
+
 
         }
+
+        /*int colorToUse = new Color(0,0,255).getRGB();
+
+        if (path != null) {
+                File f = new File("/home/savc18/Documents/Repo/AStar_PathFinding/src/main/java/path.jpg");
+                for(ArrayList<Node> slicedPath : path){
+                        for(Node point: slicedPath){
+                                img.setRGB(point.y, point.x, colorToUse);
+                                ImageIO.write(img, "jpg", f);
+                        }
+
+                }
+        }*/
 
         public BufferedImage getImg() { return img; }
 

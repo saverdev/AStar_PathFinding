@@ -1,6 +1,3 @@
-import stdlib_supp.StdDraw;
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -10,65 +7,32 @@ public class Dijkstra {
     private Node[][] cell;
     private ArrayList<Node> path;
     private ArrayList<Node> closedList;
+    private ArrayList<ArrayList<Node>> pathMultiplePoints;
 
     public Dijkstra(boolean[][] grid, Node start, Node end){
         path = new ArrayList<>();
         closedList = new ArrayList<>();
         this.cell = new Node[grid.length][grid[0].length];
         this.grid = grid;
-        this.show(this.grid, false, start.y, start.x, end.y, end.x);
         EuclidianMethod(this.grid, start.y, start.x, end.y, end.x);
     }
 
-    private void show(boolean[][] a, boolean which) {
-        int x = a[0].length;
-        int y = a.length;
-        StdDraw.setXscale(-1, x);
-        StdDraw.setYscale(-1, y);
-        StdDraw.setPenColor(StdDraw.BLACK);
-        for (int i = 0; i < y; i++)
-            for (int j = 0; j < x; j++)
-                if (a[i][j] == which)
-                    StdDraw.square(j, y - i - 1, 1);
-                else StdDraw.filledSquare(j, y - i - 1, 1);
+    public Dijkstra(boolean[][] grid, ArrayList<Node> interestPoint){
+        path = new ArrayList<>();
+        closedList = new ArrayList<>();
+        this.grid = grid;
+        this.cell = new Node[grid.length][grid[0].length];
+        this.getPath(interestPoint, grid);
     }
 
-    // draw the N-by-N boolean matrix to standard draw, including the points A (x1, y1) and B (x2,y2) to be marked by a circle
-
-    private void show(boolean[][] a, boolean which, int x1, int y1, int x2, int y2) {
-        int x = a[0].length;
-        int y = a.length;
-        StdDraw.setXscale(1, x);
-        StdDraw.setYscale(1, y);
-        StdDraw.setPenColor(StdDraw.BLACK);
-        for (int i = 0; i < y; i++)
-            for (int j = 0; j < x; j++)
-                if (a[i][j] == which)
-                    if (i == x1 && j == y1){
-                        StdDraw.setPenColor(StdDraw.GREEN);
-                        StdDraw.circle(j, y - i - 1, .5);
-                        StdDraw.setPenColor(StdDraw.BLACK);
-                    }else if(i == x2 && j == y2){
-                        StdDraw.setPenColor(StdDraw.RED);
-                        StdDraw.circle(j, y - i - 1, .5);
-                        StdDraw.setPenColor(StdDraw.BLACK);
-                    }else StdDraw.square(j, y - i - 1, .5);
-                else StdDraw.filledSquare(j, y - i - 1, .5);
-    }
-
-    private void EuclidianMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
+    private ArrayList<Node> EuclidianMethod(boolean[][] grid, int startY, int startX, int endY, int endX){
         int gCost = 0;
-        this.generateHValue(grid, startY, startX, endY, endX, 10, 10, false, 3);
+        ArrayList<Node> slicedPath = this.generateHValue(grid, startY, startX, endY, endX, 10, 10, false, 3);
 
         if (cell[startY][startX].hValue!=-1 && path.contains(cell[endY][endX])) {
-            StdDraw.setPenColor(Color.ORANGE);
-            StdDraw.setPenRadius(0.01);
-
             for (int i = 0; i < path.size() - 1; i++) {
-                StdDraw.line(path.get(i).y, grid.length - 1 - path.get(i).x, path.get(i + 1).y, grid.length - 1 - path.get(i + 1).x);
                 gCost += path.get(i).gValue;
             }
-
             System.out.println("Euclidean Path Found");
             System.out.println("Total Cost: " + gCost/10.0);
             gCost = 0;
@@ -76,8 +40,9 @@ public class Dijkstra {
         } else {
             System.out.println("Euclidean Path Not found");
         }
+        return slicedPath;
     }
-    private void generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath, int h) {
+    private ArrayList<Node> generateHValue(boolean matrix[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath, int h) {
 
         for (int y = 0; y < matrix.length; y++) {
             for (int x = 0; x < matrix[y].length; x++) {
@@ -105,10 +70,10 @@ public class Dijkstra {
                 }
             }
         }
-        this.generatePath(cell, startY, startX, endY, endX, v, d, additionalPath);
+        return this.generatePath(cell, startY, startX, endY, endX, v, d, additionalPath);
     }
 
-    private void generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath){
+    private ArrayList<Node> generatePath(Node hValue[][], int startY, int startX, int endY, int endX, int v, int d, boolean additionalPath){
         PriorityQueue<Node> openList = new PriorityQueue<>(11, new Comparator() {
             @Override
             public int compare(Object cell1, Object cell2) {
@@ -278,6 +243,55 @@ public class Dijkstra {
         }
 
         this.path.add(this.cell[startY][startX]);
+
+        return path;
     }
 
+    private void getPath(ArrayList<Node> interestPoint, boolean[][] grid){
+        ArrayList<ArrayList<Node>> completePath = new ArrayList<ArrayList<Node>>();
+        for(int i = 0; i < interestPoint.size() - 1; i++){
+            completePath.add(EuclidianMethod(grid, interestPoint.get(i).y, interestPoint.get(i).x, interestPoint.get(i + 1).y, interestPoint.get(i + 1).x));
+        }
+        this.pathMultiplePoints = completePath;
+    }
+
+    public boolean[][] getGrid() {
+        return grid;
+    }
+
+    public void setGrid(boolean[][] grid) {
+        this.grid = grid;
+    }
+
+    public Node[][] getCell() {
+        return cell;
+    }
+
+    public void setCell(Node[][] cell) {
+        this.cell = cell;
+    }
+
+    public ArrayList<Node> getPath() {
+        return path;
+    }
+
+    public void setPath(ArrayList<Node> path) {
+        this.path = path;
+    }
+
+    public ArrayList<Node> getClosedList() {
+        return closedList;
+    }
+
+    public void setClosedList(ArrayList<Node> closedList) {
+        this.closedList = closedList;
+    }
+
+    public ArrayList<ArrayList<Node>> getPathMultiplePoints() {
+        return pathMultiplePoints;
+    }
+
+    public void setPathMultiplePoints(ArrayList<ArrayList<Node>> pathMultiplePoints) {
+        this.pathMultiplePoints = pathMultiplePoints;
+    }
 }
